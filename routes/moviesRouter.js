@@ -6,7 +6,9 @@ const {
   postMovie,
   patchMovie,
   deleteMovie,
-  getHighestRated
+  getHighestRated,
+  getMovieStats,
+  getMoviesByGenre
 } = require("../controllers/moviesController");
 
 // ROUTING
@@ -14,6 +16,10 @@ const moviesRouter = express.Router();
 
 // TODO: THIS ROUTE DOES NOT WORK !
 moviesRouter.route("/highest-rated").get(getHighestRated, getAllMovies);
+
+moviesRouter.route("/movie-stats").get(getMovieStats);
+
+moviesRouter.route("/movies-by-genre/:genre").get(getMoviesByGenre);
 
 moviesRouter.route("/").get(getAllMovies).post(postMovie);
 moviesRouter.route("/:id").get(getMovie).patch(patchMovie).delete(deleteMovie);

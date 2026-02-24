@@ -13,8 +13,12 @@ const getHighestRated = (req, res, next) => {
 const getAllMovies = async (req, res) => {
   try {
     // CLASS API FEATURES
-    const features = new apiFeatures(Movie.find(), req.query).filter().sort().select().paginate()
-    let movies = await features.query
+    const features = new apiFeatures(Movie.find(), req.query)
+      .filter()
+      .sort()
+      .select()
+      .paginate();
+    let movies = await features.query;
 
     // EXCLUDED FIELDS
     const queryObj = { ...req.query };
@@ -107,6 +111,65 @@ const deleteMovie = async (req, res) => {
   }
 };
 
+const getMovieStats = async (req, res) => {
+  try {
+    const stats = await Movie.aggregate([
+      { $match: { rating: { $gte: 5 } } },
+      {
+        $group: {
+          _id: null,
+          avgRating: { $avg: "$rating" },
+          maxDuration: { $max: "$duration" },
+          minPrice: { $min: "$price" },
+          sumPrice: { $sum: "$price" },
+          movieCount: { $sum: 1 },
+        },
+      },
+      { $sort: { minPrice: 1 } },
+      { $match: { maxPrice: { $gte: 15 } } },
+    ]);
+    res.status(200).json({
+      status: "succeed",
+      count: stats.length,
+      data: { stats },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
+const getMoviesByGenre = async (req, res) => {
+  try {
+    const genre = req.params.genre;
+    const movies = await Movie.aggregate([
+      { $unwind: "$genres" },
+      {
+        $group: {
+          _id: "$genres",
+          movieCount: { $sum: 1 },
+          movies: { $push: "$name" },
+        },
+      },
+      { $addFields: { genre: "$_id" } },
+      { $project: { _id: 0 } },
+      { $match: { genre: genre } },
+    ]);
+    res.status(200).json({
+      status: "succeed",
+      count: movies.length,
+      data: { movies },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   getAllMovies,
   getMovie,
@@ -114,4 +177,6 @@ module.exports = {
   patchMovie,
   deleteMovie,
   getHighestRated,
+  getMovieStats,
+  getMoviesByGenre,
 };
