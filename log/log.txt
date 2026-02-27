@@ -9,3 +9,6 @@ This document takes 126 milliseconds
 This document takes 138 milliseconds 
 This document takes 115 milliseconds 
 This movie is exemple, created by IMAD
+This document takes 139 milliseconds 
+This document takes 115 milliseconds 
+This document takes 125 milliseconds 

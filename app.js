@@ -3,9 +3,11 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const moviesRouter = require("./routes/moviesRouter");
+const globalErrorHandler = require("./controllers/errorController");
+const CustomError = require("./utils/customError");
 
 // SETTING THE QUERY PARSER
-app.set('query parser', 'extended');
+app.set("query parser", "extended");
 
 // MIDDLEWARE
 if (process.env.NODE_ENV === "development") {
@@ -18,7 +20,30 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.static("./public"));
-// Router
+
+// USING ROUTES
 app.use("/api/v1/movies", moviesRouter);
+app.use((req, res, next) => {
+  // METHOD 01
+  // res.status(404).json({
+  //   status: 'fail',
+  //   message: `Can't find ${req.originalUrl} in the server!`
+  // })
+
+  // METHOD 02
+  // const err = new Error(`Can't find ${req.originalUrl} in the server!`)
+  // err.status = 'fail'
+  // err.statusCode = 404
+
+  // METHOD 03
+  const err = new CustomError(
+    `Can't find ${req.originalUrl} in the server!`,
+    404,
+  );
+
+  next(err);
+});
+
+app.use(globalErrorHandler);
 
 module.exports = app;
