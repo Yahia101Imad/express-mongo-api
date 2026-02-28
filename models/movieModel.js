@@ -1,7 +1,7 @@
 // IMPORT PACKAGE
 const mongoose = require("mongoose");
 const fs = require("fs");
-const validator = require('validator')
+const validator = require("validator");
 
 // SCHEMA
 const movieSchema = new mongoose.Schema(
@@ -10,9 +10,9 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      minLength: [4, 'The name field must not be below 4 characters'],
-      maxLength: [100, 'The name field must not be above 100 characters'],
-      validate: [validator.isAlpha, 'The name should be alphabets only.']
+      minLength: [4, "The name field must not be below 4 characters"],
+      maxLength: [100, "The name field must not be above 100 characters"],
+      // validate: [validator.isAlpha, "The name should be alphabets only."],
     },
     description: {
       type: String,
@@ -31,9 +31,9 @@ const movieSchema = new mongoose.Schema(
       // max: 10,
       validate: {
         validator: function (value) {
-          return value >= 1 && value <= 10
-        }
-      }
+          return value >= 1 && value <= 10;
+        },
+      },
     },
     totalRating: {
       type: Number,
@@ -96,9 +96,7 @@ movieSchema.pre("save", function () {
 // EXECUTED AFTER THE DOCUMENT HAS SAVED IN DB
 movieSchema.post("save", function (doc) {
   const content = `This movie is ${doc.name}, created by ${doc.createdBy}\r\n`;
-  fs.writeFile("./log/log.txt", content, { flag: "a" }, (err) => {
-    console.log(err.message);
-  });
+  fs.writeFile("./log/log.txt", content, { flag: "a" }, (err) => {});
 });
 
 // 2. QUERY MIDDLEWARE
@@ -113,9 +111,7 @@ movieSchema.pre(/^find/, function () {
 movieSchema.post(/^find/, function (docs) {
   this.endTime = Date.now();
   const content = `This document takes ${this.endTime - this.startTime} milliseconds \r\n`;
-  fs.writeFile("./log/log.txt", content, { flag: "a" }, (err) => {
-    console.log(err.message);
-  });
+  fs.writeFile("./log/log.txt", content, { flag: "a" }, (err) => {});
 });
 
 // 3.AGGREGATION MIDDLEWARE
