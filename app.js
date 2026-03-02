@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const moviesRouter = require("./routes/moviesRouter");
 const globalErrorHandler = require("./controllers/errorController");
 const CustomError = require("./utils/customError");
+const authRouter = require('./routes/authRouter')
 
 // SETTING THE QUERY PARSER
 app.set("query parser", "extended");
@@ -23,6 +24,7 @@ app.use(express.static("./public"));
 
 // USING ROUTES
 app.use("/api/v1/movies", moviesRouter);
+app.use("/api/v1/users", authRouter);
 app.use((req, res, next) => {
   // METHOD 01
   // res.status(404).json({
