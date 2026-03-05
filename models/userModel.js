@@ -1,5 +1,5 @@
 // IMPORT PACKAGE
-const { hash } = require("bcrypt");
+const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const validator = require("validator");
 
@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a password"],
     minlength: [8, "Password must be at least 8 characters"],
+    select: false,
   },
 
   confirmPassword: {
@@ -39,17 +40,21 @@ const userSchema = new mongoose.Schema({
       validator: function (val) {
         return this.password === val;
       },
-      massage: "The password & the Confirm Password is not match!",
+      massage: "The password & the Confirm Password do not match!",
     },
   },
 });
 
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return
+userSchema.pre("save", async function (next) {
+if (!this.isModified("password")) return next();
 
-  this.password = await hash(this.password, 8);
+  this.password = await bcrypt.hash(this.password, 8);
   this.confirmPassword = undefined;
 });
+
+userSchema.methods.comparePasswords = async function (pswrd, pswrdDB) {
+  return await bcrypt.compare(pswrd, pswrdDB);
+};
 
 const User = mongoose.model("User", userSchema);
 
