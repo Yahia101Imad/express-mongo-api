@@ -19,3 +19,9 @@ This document takes 104 milliseconds
 This document takes 657 milliseconds 
 This document takes 100 milliseconds 
 This document takes 113 milliseconds 
+This document takes 82 milliseconds 
+This document takes 72 milliseconds 
+This document takes 1030 milliseconds 
+This document takes 92 milliseconds 
+This document takes 72 milliseconds 
+This document takes 69 milliseconds 

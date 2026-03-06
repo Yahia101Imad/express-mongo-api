@@ -8,8 +8,10 @@ const {
   deleteMovie,
   getHighestRated,
   getMovieStats,
-  getMoviesByGenre
+  getMoviesByGenre,
 } = require("../controllers/moviesController");
+
+const { protect } = require("../controllers/authController");
 
 // ROUTING
 const moviesRouter = express.Router();
@@ -21,7 +23,7 @@ moviesRouter.route("/movie-stats").get(getMovieStats);
 
 moviesRouter.route("/movies-by-genre/:genre").get(getMoviesByGenre);
 
-moviesRouter.route("/").get(getAllMovies).post(postMovie);
+moviesRouter.route("/").get(protect, getAllMovies).post(postMovie);
 moviesRouter.route("/:id").get(getMovie).patch(patchMovie).delete(deleteMovie);
 
 // EXPORTS
