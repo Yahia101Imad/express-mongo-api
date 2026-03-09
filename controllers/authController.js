@@ -188,32 +188,6 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-const updatePassword = asyncErrorHandler(async (req, res, next) => {
-  // 1. Get current user data from database
-  const user = await User.findOne(req.user._id).select('+password')
-
-  // 2. Check if the supplied current password is correct
-  if(!(await user.comparePasswordInDB(req.body.currentPassword, user.password))){
-    return next(new CustomError("This password you provided is not wrong ", 400));
-  }
-
-  // 3. If the supplied password is true, change the current password
-  user.password = req.body.password
-  user.confirmPassword = req.body.confirmPassword
-
-  await user.save()
-
-  // 4. Login user & send JWT
-  const token = signToken(user._id)
-  res.status(200).json({
-    status: 'succeed',
-    token,
-    data: {
-      user
-    }
-  })
-})
-
 module.exports = {
   signup,
   login,
@@ -221,5 +195,4 @@ module.exports = {
   restrict,
   forgotPassword,
   resetPassword,
-  updatePassword
 };
