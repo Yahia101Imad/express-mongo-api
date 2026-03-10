@@ -7,6 +7,23 @@ const globalErrorHandler = require("./controllers/errorController");
 const CustomError = require("./utils/customError");
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const sanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require('hpp');
+
+app.use(helmet());
+app.use(sanitize());
+app.use(xss());
+app.use(hpp({whitelist: ['price', 'rating', 'duration', 'releaseYear', 'totalRating', 'genres', 'actors']}));
+
+let limiter = rateLimit({
+  max: 1000,
+  windowMs: 60 * 60 * 1000,
+  message:
+    "We have received to many requests for this IP, Please try again after one hour",
+});
 
 // SETTING THE QUERY PARSER
 app.set("query parser", "extended");
@@ -16,12 +33,15 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
 app.use((req, res, next) => {
   req.requestedAT = new Date().toISOString();
   next();
 });
 app.use(express.static("./public"));
+
+//LIMITING ROUTE
+app.use("/api", limiter);
 
 // USING ROUTES
 app.use("/api/v1/movies", moviesRouter);

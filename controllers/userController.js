@@ -1,11 +1,7 @@
 // IMPORT PACKAGES
 const User = require("../models/userModel");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
-const jwt = require("jsonwebtoken");
 const CustomError = require("../utils/customError");
-const util = require("util");
-const sendEmail = require("../utils/email");
-const crypto = require("crypto");
 
 const getAllUsers = asyncErrorHandler(async (req, res, next) => {
   const users = await User.find();

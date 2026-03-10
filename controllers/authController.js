@@ -18,9 +18,21 @@ const signup = asyncErrorHandler(async (req, res) => {
 
   const token = signToken(newUser._id);
 
+  const options = {
+    maxAge: process.env.EXPIRED_IN,
+    httpOnly: true
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    options.secure = true
+  }
+
+  res.cookie('jwt', token, options)
+
+  user.password = undefined
+
   res.status(201).json({
     status: "success",
-    token,
     data: {
       user: newUser,
     },
